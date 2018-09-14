@@ -14,6 +14,7 @@ def print_menu
   puts "1. Input the students".center(100)
   puts "2. Show the students".center(100)
   puts "3. Save students to a file".center(100)
+  puts "4. Load student information".center(100)
   puts "9. Exit".center(100)
 end
 
@@ -25,6 +26,8 @@ def process(selection)
       show_students
     when "3"
       save_students
+    when "4"
+      load_students
     when "9"
       exit
     else
@@ -73,7 +76,7 @@ def get_nationality
       @student[:nationality] = "Undisclosed"
       break
     else
-      @student[:nationality] = nationality.to_sym
+      @student[:nationality] = nationality
     end
     break if typo_check(nationality)
   end
@@ -87,7 +90,7 @@ def get_height
       @student[:height] = "Undisclosed"
       break
     else
-      @student[:height] = "#{height}cm".to_sym
+      @student[:height] = "#{height}cm"
     end
     break if typo_check(height)
   end
@@ -178,6 +181,18 @@ def save_students
   end
   file.close
   puts "Write to #{input}.csv complete!"
+end
+
+def load_students
+  puts "Please enter a file name, including extension: "
+  input = gets.chomp
+  file = File.open("#{input}", "r")
+  file.readlines.each do |line|
+  name, cohort, nationality, height = line.chomp.split(',')
+    @students << { name: name, cohort: cohort.to_sym, nationality: nationality, height: height }
+  end
+  file.close
+  puts "Load complete!"
 end
 
 interactive_menu
