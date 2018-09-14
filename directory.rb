@@ -21,7 +21,7 @@ def print_menu
   puts "1. Input students".center(100)
   puts "2. List all students".center(100)
   puts "3. List all students with specific first initial".center(100)
-  puts "4. Save students to a file".center(100)
+  puts "4. Save students to a CSV file".center(100)
   puts "5. Load students from a specified file".center(100)
   puts "0. Exit".center(100)
 end
@@ -178,13 +178,11 @@ def puts_each_student(students)
 end
 
 def save_students
-  puts "Please enter a file name: "
+  puts "Please enter a file name (without extension): "
   input = STDIN.gets.chomp
-  File.open("#{input}.csv", "w") do |file|
+  CSV.open("#{input}.csv", "w") do |file|
     @students.each do |student|
-      student_data = [student[:name], student[:cohort], student[:nationality], student[:age]]
-      line = student_data.join(", ")
-      file.puts line
+      file << [student[:name], student[:cohort], student[:nationality], student[:age]]
     end
   end
   puts "Write to #{input}.csv complete!"
@@ -204,7 +202,7 @@ end
 
 def load_students(file = "students.csv")
   if file == "override"
-    puts "Please enter a filename: "
+    puts "Please enter a filename (with extension): "
     file = STDIN.gets.chomp
   end
   CSV.foreach("#{file}") do |row|
