@@ -13,6 +13,7 @@ def print_menu
   puts "-----------------------".center(100)
   puts "1. Input the students".center(100)
   puts "2. Show the students".center(100)
+  puts "3. Save students to a file".center(100)
   puts "9. Exit".center(100)
 end
 
@@ -22,6 +23,8 @@ def process(selection)
       @students = input_students
     when "2"
       show_students
+    when "3"
+      save_students
     when "9"
       exit
     else
@@ -162,6 +165,19 @@ def print_specific_length(students, length)
   selected.each_with_index do |student, index|
     puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, #{student[:nationality]}, #{student[:height]}).".center(100)
   end
+end
+
+def save_students
+  puts "Please enter a file name: "
+  input = gets.chomp
+  file = File.open("#{input}.csv", "w")
+  @students.each do |student|
+    student_data = [student[:name], student[:cohort], student[:nationality], student[:height]]
+    line = student_data.join(", ")
+    file.puts line
+  end
+  file.close
+  puts "Write to #{input}.csv complete!"
 end
 
 interactive_menu
