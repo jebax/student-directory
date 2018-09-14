@@ -1,17 +1,20 @@
-student_count = 11
-# first I print out the names of each student, followed by a line break.
+# student names are stored in an array.
+students = [
+  "Dr. Hannibal Lecter",
+  "Darth Vader",
+  "Nurse Ratched",
+  "Michael Corleone",
+  "Alex DeLarge",
+  "The Wicked Witch of the West",
+  "Terminator",
+  "Freddy Krueger",
+  "The Joker",
+  "Joffrey Baratheon",
+  "Patrick Bateman"
+]
+
 puts "The students of Villains Academy"
 puts "-------------"
-puts "Dr. Hannibal Lecter"
-puts "Darth Vader"
-puts "Nurse Ratched"
-puts "Michael Corleone"
-puts "Alex DeLarge"
-puts "The Wicked Witch of the West"
-puts "Terminator"
-puts "Freddy Krueger"
-puts "The Joker"
-puts "Joffrey Baratheon"
-puts "Patrick Bateman"
-# using `print` here to demonstrate the difference between `print` and `puts`.
-puts "Overall, we have #{student_count} great students."
+students.each { |student| puts student }
+
+puts "Overall, we have #{students.count} great students."
