@@ -28,20 +28,13 @@ end
 
 def process(selection)
   case selection
-    when "1"
-      @students = input_students
-    when "2"
-      show_students
-    when "3"
-      print_specific_initial(@students)
-    when "4"
-      save_students
-    when "5"
-      load_students("override")
-    when "0"
-      exit
-    else
-      puts "I don't know what you mean, try again!"
+  when "1" then @students = input_students
+  when "2" then show_students
+  when "3" then print_specific_initial(@students)
+  when "4" then save_students
+  when "5" then load_students("override")
+  when "0" then exit
+  else puts "I don't know what you mean, try again!"
   end
 end
 
