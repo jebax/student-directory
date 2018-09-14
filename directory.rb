@@ -71,6 +71,8 @@ def print_header
 end
 
 def print(students)
+  puts "No students to print!".center(100) if students.size == 0
+  
   # Students are grouped by cohort: I create a new hash, extracting the cohort information to the hash.
   #   I then push each student's information into that cohort's key-value pair.
   cohorts = students.each_with_object({}) do |student, hash|
