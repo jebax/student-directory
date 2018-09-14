@@ -1,4 +1,3 @@
-# student names are stored in an array.
 def input_students
   students = []
 
@@ -55,6 +54,11 @@ def input_students
       break if input != "no"
     end
 
+    if students.size == 1
+      puts "Now we have 1 student."
+    else
+      puts "Now we have #{students.size} students."
+    end
   end
 
   students
@@ -66,11 +70,16 @@ def print_header
 end
 
 def print(students)
-  count = 1
-  until count > students.size do
-    current = students[count - 1]
-    puts "#{count}. #{current[:name]} (#{current[:cohort]} cohort, #{current[:nationality]}, #{current[:height]}).".center(100)
-    count += 1
+  groups = students.each_with_object({}) do |student, hash|
+    hash[student[:cohort]] ||= []
+    hash[student[:cohort]] << student
+  end
+  groups.each do |group, students|
+    puts "#{group} cohort:".center(100)
+    students.each_with_index do |student, index|
+      puts "#{index + 1}. #{student[:name]} (#{student[:nationality]}, #{student[:height]}).".center(100)
+    end
+    puts "\n"
   end
 end
 
@@ -101,3 +110,6 @@ def print_footer(students)
 end
 
 students = input_students
+print_header
+print(students)
+print_footer(students)
