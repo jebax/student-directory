@@ -13,5 +13,5 @@ Follow the instructions displayed in your terminal! This program supports the sa
 
 This project was completed at the end of the Makers Academy PreCourse, combining instruction with self-directed coding.
 
-##### To-do: #####
+#### To-do: ####
 * Completely refactor into classes and modules (not part of the PreCourse).
