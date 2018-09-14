@@ -1,68 +1,113 @@
-def input_students
-  students = []
+@students = []
+@students_current = []
 
-  # Students are added one by one, with each piece of information collected in order for each student.
+def interactive_menu
+  loop do
+    print_menu
+    process(gets.chomp)
+  end
+end
+
+def print_menu
+  puts "Enter an option number, followed by the return key".center(100)
+  puts "-----------------------".center(100)
+  puts "1. Input the students".center(100)
+  puts "2. Show the students".center(100)
+  puts "9. Exit".center(100)
+end
+
+def process(selection)
+  case selection
+    when "1"
+      @students = input_students
+    when "2"
+      show_students
+    when "9"
+      exit
+    else
+      puts "I don't know what you mean, try again"
+  end
+end
+
+def input_students
   while true do
     puts "Enter a student name. To finish, press return now."
     name = gets.chomp
     break if name.empty?
-
-    students << { name: name, cohort: nil, nationality: nil, height: nil }
-    current = students[-1]
-
-    while true do
-      puts "Enter a cohort. To enter the default cohort (November), press return."
-      cohort = gets.chomp
-      if cohort.empty?
-        current[:cohort] = :November
-        break
-      else
-        current[:cohort] = cohort.to_sym
-      end
-      # The program allows for typos to be made, as the user can type 'no' to be allowed to enter the information again.
-      puts "Is #{cohort} correct? Type 'no' to re-enter, or anything else to continue."
-      input = gets.chomp
-      break if input != "no"
-    end
-
-    while true do
-      puts "Enter a nationality. To enter the default value (N/A), press return."
-      nationality = gets.chomp
-      if nationality.empty?
-        current[:nationality] = "Undisclosed"
-        break
-      else
-        current[:nationality] = nationality.to_sym
-      end
-
-      puts "Is #{nationality} correct? Type 'no' to re-enter, or anything else to continue."
-      input = gets.chomp
-      break if input != "no"
-    end
-
-    while true do
-      puts "Enter a height in cm. To enter the default value (N/A), press return."
-      height = gets.chomp
-      if height.empty?
-        current[:height] = "Undisclosed"
-        break
-      else
-        current[:height] = "#{height}cm".to_sym
-      end
-
-      puts "Is #{height} correct? Type 'no' to re-enter, or anything else to continue."
-      input = gets.chomp
-      break if input != "no"
-    end
-
-    if students.size == 1
-      puts "Now we have 1 student."
-    else
-      puts "Now we have #{students.size} students."
-    end
+    @students_current << { name: name, cohort: nil, nationality: nil, height: nil }
+    @student = @students_current[-1]
+    get_information
+    students_count_check
   end
-  # The method returns the `students` array at the end, for it to be used in other methods.
-  students
+  @students_current
+end
+
+def get_information
+  get_cohort
+  get_nationality
+  get_height
+end
+
+def get_cohort
+  while true do
+    puts "Enter a cohort. To enter the default cohort (November), press return."
+    cohort = gets.chomp
+    if cohort.empty?
+      @student[:cohort] = :November
+      break
+    else
+      @student[:cohort] = cohort.to_sym
+    end
+    break if typo_check(cohort)
+  end
+end
+
+def get_nationality
+  while true do
+    puts "Enter a nationality. To enter the default value (N/A), press return."
+    nationality = gets.chomp
+    if nationality.empty?
+      @student[:nationality] = "Undisclosed"
+      break
+    else
+      @student[:nationality] = nationality.to_sym
+    end
+    break if typo_check(nationality)
+  end
+end
+
+def get_height
+  while true do
+    puts "Enter a height in cm. To enter the default value (N/A), press return."
+    height = gets.chomp
+    if height.empty?
+      @student[:height] = "Undisclosed"
+      break
+    else
+      @student[:height] = "#{height}cm".to_sym
+    end
+    break if typo_check(height)
+  end
+end
+
+def typo_check(input)
+  puts "Is #{input} correct? Type 'no' to re-enter, or anything else to continue."
+  input = gets.chomp
+  input != "no"
+end
+
+def students_count_check
+  if @students_current.size == 1
+    puts "Now we have 1 student."
+  else
+    puts "Now we have #{@students_current.size} students."
+  end
+end
+
+def show_students
+  print_header
+  print_students_list(@students)
+  print_footer(@students)
 end
 
 def print_header
@@ -70,22 +115,34 @@ def print_header
   puts "-----------------------".center(100)
 end
 
-def print(students)
+def print_students_list(students)
   puts "No students to print!".center(100) if students.size == 0
-  
-  # Students are grouped by cohort: I create a new hash, extracting the cohort information to the hash.
-  #   I then push each student's information into that cohort's key-value pair.
-  cohorts = students.each_with_object({}) do |student, hash|
+  cohorts = group_by_cohort(students)
+  group_print(cohorts)
+end
+
+def group_by_cohort(students)
+  students.each_with_object({}) do |student, hash|
     hash[student[:cohort]] ||= []
     hash[student[:cohort]] << student
   end
-  # For each cohort, I `puts` the name of the cohort, following by a numbered list of the students in that cohort, followed by an empty line.
-  cohorts.each do |cohort, students|
+end
+
+def group_print(groups)
+  groups.each do |cohort, students|
     puts "#{cohort} cohort:".center(100)
     students.each_with_index do |student, index|
       puts "#{index + 1}. #{student[:name]} (#{student[:nationality]}, #{student[:height]}).".center(100)
     end
     puts "\n"
+  end
+end
+
+def print_footer(students)
+  case students.size
+  when 0 then puts "There are no students!".center(100)
+  when 1 then puts "We only have one student, but they're great!".center(100)
+  else puts "Overall, we have #{students.count} great students.".center(100)
   end
 end
 
@@ -107,15 +164,4 @@ def print_specific_length(students, length)
   end
 end
 
-def print_footer(students)
-  case students.size
-  when 0 then puts "There are no students!".center(100)
-  when 1 then puts "We only have one student, but they're great!".center(100)
-  else puts "Overall, we have #{students.count} great students.".center(100)
-  end
-end
-
-students = input_students
-print_header
-print(students)
-print_footer(students)
+interactive_menu
