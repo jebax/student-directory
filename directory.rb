@@ -1,3 +1,4 @@
+require 'CSV'
 @students = []
 @students_current = []
 
@@ -19,7 +20,9 @@ def print_menu
   puts "-----------------------".center(100)
   puts "1. Input students".center(100)
   puts "2. List all students".center(100)
-  puts "3. Save students to a file".center(100)
+  puts "3. List all students with specific first initial".center(100)
+  puts "4. Save students to a file".center(100)
+  puts "5. Load students from a specified file".center(100)
   puts "0. Exit".center(100)
 end
 
@@ -30,7 +33,11 @@ def process(selection)
     when "2"
       show_students
     when "3"
+      print_specific_initial(@students)
+    when "4"
       save_students
+    when "5"
+      load_students("override")
     when "0"
       exit
     else
@@ -155,16 +162,11 @@ def print_footer(students)
   end
 end
 
-def print_specific_initial(students, initial)
+def print_specific_initial(students)
+  puts "Please enter an initial to list the relevant students: "
+  initial = STDIN.gets.chomp
   selected = students.select do |student|
     student[:name].chars.first.downcase == initial.downcase
-  end
-  puts_each_student(selected)
-end
-
-def print_specific_length(students, length)
-  selected = students.select do |student|
-    student[:name].size <= length
   end
   puts_each_student(selected)
 end
@@ -201,13 +203,14 @@ def try_load_students
 end
 
 def load_students(file = "students.csv")
-  File.open("#{file}", "r") do |file|
-    file.readlines.each do |line|
-    name, cohort, nationality, age = line.chomp.split(',')
-      @students << { name: name, cohort: cohort.to_sym, nationality: nationality, age: age }
-    end
+  if file == "override"
+    puts "Please enter a filename: "
+    file = STDIN.gets.chomp
   end
+  CSV.foreach("#{file}") do |row|
+    @students << { name: row[0], cohort: row[1].to_sym, nationality: row[2], age: row[3] }
+  end
+  puts "Load successful!"
 end
 
-try_load_students
 interactive_menu
