@@ -2,17 +2,23 @@
 @students_current = []
 
 def interactive_menu
+  load_title
   loop do
     print_menu
     process(gets.chomp)
   end
 end
 
+def load_title
+  puts File.read("title.txt")
+  puts "\n"
+end
+
 def print_menu
   puts "Enter an option number, followed by the return key".center(100)
   puts "-----------------------".center(100)
-  puts "1. Input the students".center(100)
-  puts "2. Show the students".center(100)
+  puts "1. Input students".center(100)
+  puts "2. List all students".center(100)
   puts "3. Save students to a file".center(100)
   puts "4. Load student information".center(100)
   puts "9. Exit".center(100)
@@ -40,7 +46,7 @@ def input_students
     puts "Enter a student name. To finish, press return now."
     name = gets.chomp
     break if name.empty?
-    @students_current << { name: name, cohort: nil, nationality: nil, height: nil }
+    @students_current << { name: name, cohort: nil, nationality: nil, age: nil }
     @student = @students_current[-1]
     get_information
     students_count_check
@@ -51,7 +57,7 @@ end
 def get_information
   get_cohort
   get_nationality
-  get_height
+  get_age
 end
 
 def get_cohort
@@ -73,7 +79,7 @@ def get_nationality
     puts "Enter a nationality. To enter the default value (N/A), press return."
     nationality = gets.chomp
     if nationality.empty?
-      @student[:nationality] = "Undisclosed"
+      @student[:nationality] = "N/A"
       break
     else
       @student[:nationality] = nationality
@@ -82,17 +88,17 @@ def get_nationality
   end
 end
 
-def get_height
+def get_age
   while true do
-    puts "Enter a height in cm. To enter the default value (N/A), press return."
-    height = gets.chomp
-    if height.empty?
-      @student[:height] = "Undisclosed"
+    puts "Enter an age in years. To enter the default value (N/A), press return."
+    age = gets.chomp
+    if age.empty?
+      @student[:age] = "N/A"
       break
     else
-      @student[:height] = "#{height}cm"
+      @student[:age] = age
     end
-    break if typo_check(height)
+    break if typo_check(age)
   end
 end
 
@@ -117,12 +123,12 @@ def show_students
 end
 
 def print_header
-  puts "The students of Villains Academy".center(100)
+  puts "The students of Joel's Academy".center(100)
   puts "-----------------------".center(100)
 end
 
 def print_students_list(students)
-  puts "No students to print!".center(100) if students.size == 0
+  puts "No students to print!\n".center(100) if students.size == 0
   cohorts = group_by_cohort(students)
   group_print(cohorts)
 end
@@ -138,7 +144,7 @@ def group_print(groups)
   groups.each do |cohort, students|
     puts "#{cohort} cohort:".center(100)
     students.each_with_index do |student, index|
-      puts "#{index + 1}. #{student[:name]} (#{student[:nationality]}, #{student[:height]}).".center(100)
+      puts "#{index + 1}. #{student[:name]} (#{student[:nationality]}, age #{student[:age]}).".center(100)
     end
     puts "\n"
   end
@@ -146,9 +152,9 @@ end
 
 def print_footer(students)
   case students.size
-  when 0 then puts "There are no students!".center(100)
-  when 1 then puts "We only have one student, but they're great!".center(100)
-  else puts "Overall, we have #{students.count} great students.".center(100)
+  when 0 then puts "There are no students!\n".center(100)
+  when 1 then puts "We only have one student, but they're great!\n".center(100)
+  else puts "Overall, we have #{students.count} great students.\n".center(100)
   end
 end
 
@@ -157,7 +163,7 @@ def print_specific_initial(students, initial)
     student[:name].chars.first.downcase == initial.downcase
   end
   selected.each_with_index do |student, index|
-    puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, #{student[:nationality]}, #{student[:height]}).".center(100)
+    puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, #{student[:nationality]}, age #{student[:age]}).".center(100)
   end
 end
 
@@ -166,7 +172,7 @@ def print_specific_length(students, length)
     student[:name].size <= length
   end
   selected.each_with_index do |student, index|
-    puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, #{student[:nationality]}, #{student[:height]}).".center(100)
+    puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, #{student[:nationality]}, age #{student[:age]}).".center(100)
   end
 end
 
@@ -175,7 +181,7 @@ def save_students
   input = gets.chomp
   file = File.open("#{input}.csv", "w")
   @students.each do |student|
-    student_data = [student[:name], student[:cohort], student[:nationality], student[:height]]
+    student_data = [student[:name], student[:cohort], student[:nationality], student[:age]]
     line = student_data.join(", ")
     file.puts line
   end
@@ -189,7 +195,7 @@ def load_students
   file = File.open("#{input}", "r")
   file.readlines.each do |line|
   name, cohort, nationality, height = line.chomp.split(',')
-    @students << { name: name, cohort: cohort.to_sym, nationality: nationality, height: height }
+    @students << { name: name, cohort: cohort.to_sym, nationality: nationality, age: age }
   end
   file.close
   puts "Load complete!"
