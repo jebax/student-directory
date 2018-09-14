@@ -5,7 +5,7 @@ def interactive_menu
   load_title
   loop do
     print_menu
-    process(gets.chomp)
+    process(STDIN.gets.chomp)
   end
 end
 
@@ -20,8 +20,7 @@ def print_menu
   puts "1. Input students".center(100)
   puts "2. List all students".center(100)
   puts "3. Save students to a file".center(100)
-  puts "4. Load student information".center(100)
-  puts "9. Exit".center(100)
+  puts "0. Exit".center(100)
 end
 
 def process(selection)
@@ -32,19 +31,17 @@ def process(selection)
       show_students
     when "3"
       save_students
-    when "4"
-      load_students
-    when "9"
+    when "0"
       exit
     else
-      puts "I don't know what you mean, try again"
+      puts "I don't know what you mean, try again!"
   end
 end
 
 def input_students
   while true do
     puts "Enter a student name. To finish, press return now."
-    name = gets.chomp
+    name = STDIN.gets.chomp
     break if name.empty?
     @students_current << { name: name, cohort: nil, nationality: nil, age: nil }
     @student = @students_current[-1]
@@ -63,7 +60,7 @@ end
 def get_cohort
   while true do
     puts "Enter a cohort. To enter the default cohort (November), press return."
-    cohort = gets.chomp
+    cohort = STDIN.gets.chomp
     if cohort.empty?
       @student[:cohort] = :November
       break
@@ -77,7 +74,7 @@ end
 def get_nationality
   while true do
     puts "Enter a nationality. To enter the default value (N/A), press return."
-    nationality = gets.chomp
+    nationality = STDIN.gets.chomp
     if nationality.empty?
       @student[:nationality] = "N/A"
       break
@@ -91,7 +88,7 @@ end
 def get_age
   while true do
     puts "Enter an age in years. To enter the default value (N/A), press return."
-    age = gets.chomp
+    age = STDIN.gets.chomp
     if age.empty?
       @student[:age] = "N/A"
       break
@@ -104,7 +101,7 @@ end
 
 def typo_check(input)
   puts "Is #{input} correct? Type 'no' to re-enter, or anything else to continue."
-  input = gets.chomp
+  input = STDIN.gets.chomp
   input != "no"
 end
 
@@ -162,43 +159,55 @@ def print_specific_initial(students, initial)
   selected = students.select do |student|
     student[:name].chars.first.downcase == initial.downcase
   end
-  selected.each_with_index do |student, index|
-    puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, #{student[:nationality]}, age #{student[:age]}).".center(100)
-  end
+  puts_each_student(selected)
 end
 
 def print_specific_length(students, length)
   selected = students.select do |student|
     student[:name].size <= length
   end
-  selected.each_with_index do |student, index|
+  puts_each_student(selected)
+end
+
+def puts_each_student(students)
+  students.each_with_index do |student, index|
     puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, #{student[:nationality]}, age #{student[:age]}).".center(100)
   end
 end
 
 def save_students
   puts "Please enter a file name: "
-  input = gets.chomp
-  file = File.open("#{input}.csv", "w")
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort], student[:nationality], student[:age]]
-    line = student_data.join(", ")
-    file.puts line
+  input = STDIN.gets.chomp
+  File.open("#{input}.csv", "w") do |file|
+    @students.each do |student|
+      student_data = [student[:name], student[:cohort], student[:nationality], student[:age]]
+      line = student_data.join(", ")
+      file.puts line
+    end
   end
-  file.close
   puts "Write to #{input}.csv complete!"
 end
 
-def load_students
-  puts "Please enter a file name, including extension: "
-  input = gets.chomp
-  file = File.open("#{input}", "r")
-  file.readlines.each do |line|
-  name, cohort, nationality, height = line.chomp.split(',')
-    @students << { name: name, cohort: cohort.to_sym, nationality: nationality, age: age }
+def try_load_students
+  filename = ARGV.first
+  return if filename.nil?
+  if File.exists?(filename)
+    load_students(filename)
+    puts "Loaded #{@students.count} students from #{filename}."
+  else
+    puts "Sorry, #{filename} doesn't exist."
+    exit
   end
-  file.close
-  puts "Load complete!"
 end
 
+def load_students(file = "students.csv")
+  File.open("#{file}", "r") do |file|
+    file.readlines.each do |line|
+    name, cohort, nationality, age = line.chomp.split(',')
+      @students << { name: name, cohort: cohort.to_sym, nationality: nationality, age: age }
+    end
+  end
+end
+
+try_load_students
 interactive_menu
