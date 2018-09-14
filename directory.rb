@@ -22,7 +22,7 @@ def print_menu
   puts "2. List all students".center(100)
   puts "3. List all students with specific first initial".center(100)
   puts "4. Save students to a CSV file".center(100)
-  puts "5. Load students from a specified file".center(100)
+  puts "5. Load students from a specified CSV file".center(100)
   puts "0. Exit".center(100)
 end
 
@@ -67,7 +67,7 @@ def get_cohort
     else
       @student[:cohort] = cohort.to_sym
     end
-    break if typo_check(cohort)
+    break unless typo_check(cohort)
   end
 end
 
@@ -81,7 +81,7 @@ def get_nationality
     else
       @student[:nationality] = nationality
     end
-    break if typo_check(nationality)
+    break unless typo_check(nationality)
   end
 end
 
@@ -95,14 +95,14 @@ def get_age
     else
       @student[:age] = age
     end
-    break if typo_check(age)
+    break unless typo_check(age)
   end
 end
 
 def typo_check(input)
   puts "Is #{input} correct? Type 'no' to re-enter, or anything else to continue."
   input = STDIN.gets.chomp
-  input != "no"
+  input == "no"
 end
 
 def students_count_check
@@ -195,8 +195,8 @@ end
 
 def load_students(file = "students.csv")
   if file == "override"
-    puts "Please enter a filename (with extension): "
-    file = STDIN.gets.chomp
+    puts "Please enter a filename (without extension): "
+    file = "#{STDIN.gets.chomp}.csv"
   end
   CSV.foreach("#{file}") do |row|
     @students << { name: row[0], cohort: row[1].to_sym, nationality: row[2], age: row[3] }
