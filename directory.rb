@@ -20,9 +20,10 @@ def print_menu
   puts "-----------------------".center(100)
   puts "1. Input students".center(100)
   puts "2. List all students".center(100)
-  puts "3. List all students with specific first initial".center(100)
-  puts "4. Save students to a CSV file".center(100)
-  puts "5. Load students from a specified CSV file".center(100)
+  puts "3. List all students by cohort".center(100)
+  puts "4. List all students with specific first initial".center(100)
+  puts "5. Save students to a CSV file".center(100)
+  puts "6. Load students from a specified CSV file".center(100)
   puts "0. Exit".center(100)
 end
 
@@ -30,9 +31,10 @@ def process(selection)
   case selection
   when "1" then @students = input_students
   when "2" then show_students
-  when "3" then print_specific_initial(@students)
-  when "4" then save_students
-  when "5" then load_students("override")
+  when "3" then show_cohorts
+  when "4" then print_specific_initial(@students)
+  when "5" then save_students
+  when "6" then load_students("override")
   when "0" then exit
   else puts "I don't know what you mean, try again!"
   end
@@ -119,15 +121,25 @@ def show_students
   print_footer(@students)
 end
 
+def show_cohorts
+  print_header
+  print_cohorts_list(@students)
+  print_footer(@students)
+end
+
 def print_header
   puts "The students of Joel's Academy".center(100)
   puts "-----------------------".center(100)
 end
 
+def print_cohorts_list(students)
+  puts "No students to print!\n".center(100) if students.size == 0
+  cohorts = group_by_cohort(students)
+  group_print(cohorts)
+end
+
 def print_students_list(students)
   puts "No students to print!\n".center(100) if students.size == 0
-  # cohorts = group_by_cohort(students)
-  # group_print(cohorts)
   puts_each_student(students)
 end
 
