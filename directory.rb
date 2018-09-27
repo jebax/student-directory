@@ -161,6 +161,16 @@ def group_print(groups)
   end
 end
 
+def puts_each_student(students)
+  count = 0
+  current = students[count]
+  while count < students.size do
+    puts "#{count + 1}. #{current[:name]} (#{current[:cohort]} cohort, " \
+    "#{current[:nationality]}, age #{current[:age]})".center(100)
+    count += 1
+  end
+end
+
 def print_footer(students)
   case students.size
   when 0 then puts "There are no students!\n".center(100)
@@ -176,16 +186,6 @@ def print_specific_initial(students)
     student[:name].chars.first.downcase == initial.downcase
   end
   puts_each_student(selected)
-end
-
-def puts_each_student(students)
-  count = 0
-  current = students[count]
-  while count < students.size do
-    puts "#{count + 1}. #{current[:name]} (#{current[:cohort]} cohort, " \
-    "#{current[:nationality]}, age #{current[:age]})".center(100)
-    count += 1
-  end
 end
 
 def save_students
