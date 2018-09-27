@@ -126,8 +126,9 @@ end
 
 def print_students_list(students)
   puts "No students to print!\n".center(100) if students.size == 0
-  cohorts = group_by_cohort(students)
-  group_print(cohorts)
+  # cohorts = group_by_cohort(students)
+  # group_print(cohorts)
+  puts_each_student(students)
 end
 
 def group_by_cohort(students)
@@ -140,10 +141,11 @@ end
 def group_print(groups)
   groups.each do |cohort, students|
     puts "#{cohort} cohort:".center(100)
+
     students.each_with_index do |student, index|
-      puts "#{index + 1}. #{student[:name]} (#{student[:nationality]}, age #{student[:age]}).".center(100)
+      puts "#{index + 1}. #{student[:name]} (#{student[:nationality]}, " \
+      "age #{student[:age]}).".center(100)
     end
-    puts "\n"
   end
 end
 
@@ -165,8 +167,12 @@ def print_specific_initial(students)
 end
 
 def puts_each_student(students)
-  students.each_with_index do |student, index|
-    puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, #{student[:nationality]}, age #{student[:age]}).".center(100)
+  count = 0
+  current = students[count]
+  while count < students.size do
+    puts "#{count + 1}. #{current[:name]} (#{current[:cohort]} cohort, " \
+    "#{current[:nationality]}, age #{current[:age]})".center(100)
+    count += 1
   end
 end
 
@@ -175,7 +181,7 @@ def save_students
   input = STDIN.gets.chomp
   CSV.open("#{input}.csv", "w") do |file|
     @students.each do |student|
-      file << [student[:name], student[:cohort], student[:nationality], student[:age]]
+      file << [student[:name],student[:cohort],student[:nationality],student[:age]]
     end
   end
   puts "Write to #{input}.csv complete!"
